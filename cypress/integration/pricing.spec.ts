@@ -18,12 +18,11 @@ describe('Pricing page', () => {
     const BUSINESS_PLAN = "Business"
     const ULTIMATE_PLAN = "Ultimate"
 
+    // 1.  Check prices of packages
     context('Pricing table', () => {
         beforeEach(() => {
             cy.visit('https://www.alfa.smartlook.cloud/pricing/?currencyCode=CZK')
         })
-
-        // 1.  Check prices of packages
 
         it('Plans headings', () => {
             cy.get('div:nth-child(1) > div.package__name.package-name > h3').contains(FREE_PLAN)
@@ -43,7 +42,7 @@ describe('Pricing page', () => {
                 if (freeValues[index] === 'X') {
                     cy.get(`img[src="${crossIcon}"]`).should('be.visible')
                 } else if (freeValues[index] === undefined) {
-                    // do nothing
+                    // do nothing - empty li
                 } else {
                     cy.get('span').contains(freeValues[index])
                 }
@@ -52,10 +51,12 @@ describe('Pricing page', () => {
 
         it('Check Startup plan values', () => {
             cy.get('ul:nth-child(3)>li').each(($el, index) => {
+                // Check icons condition
                 if (startupValues[index] === 'X') {
                     cy.get(`img[src="${crossIcon}"]`).should('be.visible')
-                } else if (startupValues[index] === undefined) {
-                    // do nothing
+                }
+                else if (startupValues[index] === undefined) {
+                    // do nothing - empty li
                 } else {
                     cy.get('span').contains(startupValues[index])
                 }
@@ -64,12 +65,13 @@ describe('Pricing page', () => {
 
         it('Check Business plan values', () => {
             cy.get('ul:nth-child(4)>li').each(($el, index) => {
+                // Check icons condition
                 if (businessValues[index] === 'X') {
                     cy.get(`img[src="${crossIcon}"]`).should('be.visible')
                 } else if (businessValues[index] === 'Y') {
                     cy.get(`img[src="${checkIcon}"]`).should('be.visible')
                 } else if (businessValues[index] === undefined) {
-                    // do nothing
+                    // do nothing - empty li
                 } else {
                     cy.get('.package-features-item__property--value').contains(businessValues[index])
                 }
@@ -78,10 +80,11 @@ describe('Pricing page', () => {
 
         it('Check Ultimate plan values', () => {
             cy.get('div:nth-child(4)>ul>li').each(($el, index) => {
+                // Check icons condition
                 if (ultimateValues[index] === 'Y') {
                     cy.get(`img[src="${checkIcon}"]`).should('be.visible')
                 } else if (ultimateValues[index] === undefined) {
-                    // do nothing
+                    // do nothing - empty li
                 } else {
                     cy.get('.package-features-item__property--value').contains(ultimateValues[index])
                 }
@@ -100,17 +103,18 @@ describe('Pricing page', () => {
         })
     })
 
+    // 2.  Test that 'Build a plan' button works and the modal is behaving as expected - prices and limits
     context('Pricing options', () => {
         beforeEach(() => {
             cy.visit('https://www.alfa.smartlook.cloud/pricing/?currencyCode=CZK')
         })
 
-        // 2.  Test that 'Build a plan' button works and the modal is behaving as expected - prices and limits
-
         it('Get started option', () => {
             cy.get('#free-package-button')
                 .contains('Get started')
                 .click()
+            cy.wait(1000)
+
             cy.url().should('eq', 'https://app.alfa.smartlook.cloud/sign/up')
             cy.go('back')
         })
@@ -124,8 +128,8 @@ describe('Pricing page', () => {
             // Change to mothly payment
             cy.get('.modal-price').contains('CZK 879')
             cy.get('#modal-period_interval-annually').check({ force: true })
-            // Check changed value
             cy.get('.modal-price').contains('CZK 1,099')
+
             // Change sessions limit
             cy.get('select').should('have.value', '5000')
             cy.get('select').eq(0).select('5,000').should('have.value', '5000')
@@ -191,6 +195,7 @@ describe('Pricing page', () => {
             cy.get('#modal-period_interval-annually').check({ force: true })
             cy.get('.modal-price').contains('CZK 2,599')
             cy.get('select').should('have.value', '15000')
+            // Change sessions limits
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 2,599')
 
@@ -217,7 +222,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('3 months').should('have.value', '90')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 3,049')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 3,949')
 
@@ -241,7 +246,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('6 months').should('have.value', '180')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 3,499')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 4,599')
 
@@ -265,7 +270,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('12 months').should('have.value', '360')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 3,949')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 5,249')
 
@@ -295,7 +300,7 @@ describe('Pricing page', () => {
             // Check annual plan - data history 1 month
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 2,079')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 2,639')
 
@@ -319,7 +324,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('3 months').should('have.value', '90')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 2,439')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 3,159')
 
@@ -343,7 +348,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('6 months').should('have.value', '180')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 2,799')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 3,679')
 
@@ -367,7 +372,7 @@ describe('Pricing page', () => {
             cy.get('div:nth-child(2) > select').eq(0).select('12 months').should('have.value', '360')
             cy.get('select').eq(0).select('15,000').should('have.value', '15000')
             cy.get('.modal-price').contains('CZK 3,159')
-
+            // Change sessions limits
             cy.get('select').eq(0).select('25,000').should('have.value', '25000')
             cy.get('.modal-price').contains('CZK 4,199')
 
